@@ -11,7 +11,7 @@ class Chatbot:
     def __init__(self):
         self.api_key = os.getenv("OPENROUTER_API_KEY")
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
-        self.model = "nvidia/nemotron-3-super-120b-a12b:free"
+        self.model = "meta-llama/Llama-3.1-8B-Instruct:free"
         self.history = ConversationHistory()
 
     def get_ai_response(self, messages):
