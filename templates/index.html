@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Kelautan</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .chat-container { background: white; border-radius: 8px; padding: 20px; height: 500px; overflow-y: auto; }
+        .message { margin: 10px 0; padding: 10px; border-radius: 8px; }
+        .user { background: #e3f2fd; margin-left: 20%; }
+        .ai { background: #f5f5f5; margin-right: 20%; }
+        .input-area { margin-top: 20px; display: flex; gap: 10px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 10px 20px; background: #2196f3; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #1976d2; }
+    </style>
+</head>
+<body>
+    <h1>AI Kelautan</h1>
+    <div class="chat-container" id="chat"></div>
+    <div class="input-area">
+        <input type="text" id="input" placeholder="Tanya tentang kelautan..." autocomplete="off">
+        <button onclick="sendMessage()">Kirim</button>
+        <button onclick="clearChat()">Bersihkan</button>
+    </div>
+    <script>
+        function addMessage(text, isUser) {
+            const div = document.createElement("div");
+            div.className = "message " + (isUser ? "user" : "ai");
+            div.textContent = (isUser ? "Kamu: " : "AI: ") + text;
+            document.getElementById("chat").appendChild(div);
+            document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+        }
+        async function sendMessage() {
+            const input = document.getElementById("input");
+            const msg = input.value.trim();
+            if (!msg) return;
+            addMessage(msg, true);
+            input.value = "";
+            const resp = await fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({message: msg})
+            });
+            const data = await resp.json();
+            addMessage(data.response, false);
+        }
+        async function clearChat() {
+            await fetch("/clear", {method: "POST"});
+            document.getElementById("chat").innerHTML = "";
+        }
+        document.getElementById("input").addEventListener("keypress", e => {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
